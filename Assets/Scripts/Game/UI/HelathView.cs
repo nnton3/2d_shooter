@@ -7,7 +7,7 @@ using Zenject;
 
 namespace Assets.Scripts.Game.UI
 {
-	public class GamePanel : MonoBehaviour
+	public class HelathView : MonoBehaviour
 	{
 		[SerializeField] private TMP_Text _healthField;
 		private PlayerUnit _player;

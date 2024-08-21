@@ -33,7 +33,7 @@ namespace Assets.Scripts.Game.Installers
 		[SerializeField] private Border _border;
 
 		[Header("UI")]
-		[SerializeField] private GamePanel _gamePanel;
+		[SerializeField] private HelathView _gamePanel;
 		[SerializeField] private RestartPanel _restartPanel;
 
 		public override void InstallBindings()
@@ -101,7 +101,7 @@ namespace Assets.Scripts.Game.Installers
 
 		private void RegistryUI()
 		{
-			Container.Bind<GamePanel>().FromInstance(_gamePanel).AsSingle();
+			Container.Bind<HelathView>().FromInstance(_gamePanel).AsSingle();
 			Container.Bind<RestartPanel>().FromInstance(_restartPanel).AsSingle();
 		}
 	}
