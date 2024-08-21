@@ -1,5 +1,4 @@
 ﻿using Assets.Scripts.Game.Level;
-using Assets.Scripts.Game.Units;
 using Assets.Scripts.Game.Units.AI;
 using System;
 using Zenject;
@@ -8,7 +7,7 @@ namespace Assets.Scripts.Game.Services
 {
 	public class DeadEnemiesObserver : IDisposable
 	{
-		public Action OnAllEnemiesKilled;
+		public event Action OnAllEnemiesKilled;
 		private EnemySpawner _enemySpawner;
 		private int _targetKills;
 		private int _killCounter;
@@ -17,26 +16,33 @@ namespace Assets.Scripts.Game.Services
 		public void Construct(EnemySpawner enemySpawner, LevelData levelData)
 		{
 			_enemySpawner = enemySpawner;
-			_enemySpawner.OnEnemySpawned += EnemySpawnedHandler;
-			_targetKills = levelData.UnitsSpawnData.Count;
+			_enemySpawner.OnEnemySpawned += SubscribeToEnemyDead;
+			_targetKills = levelData.UnitsSpawnData.Length;
 		}
 
-		private void EnemySpawnedHandler(EnemyUnit enemy)
+		private void SubscribeToEnemyDead(EnemyUnit enemy)
 		{
-			enemy.OnDead += EnemyDeadHandler;
+			enemy.OnDead += RegistryKill(enemy);
 		}
 
-		private void EnemyDeadHandler()
+		private Action RegistryKill(EnemyUnit enemy)
 		{
-			_killCounter++;
-			if (_killCounter < _targetKills) return;
-			OnAllEnemiesKilled?.Invoke();
+			return () =>
+			{
+				enemy.OnDead -= RegistryKill(enemy);
+				_killCounter++;
+				if (_killCounter < _targetKills)
+					return;
+				OnAllEnemiesKilled?.Invoke();
+			};
 		}
 
 		public void Dispose()
 		{
-			if (_enemySpawner == null) return;
-			_enemySpawner.OnEnemySpawned -= EnemySpawnedHandler;
+			if (_enemySpawner == null) 
+				return;
+			_enemySpawner.OnEnemySpawned -= SubscribeToEnemyDead;
+			OnAllEnemiesKilled = null;
 		}
 	}
 }

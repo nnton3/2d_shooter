@@ -1,5 +1,4 @@
 ﻿using Assets.Scripts.Game.Units.AI;
-using System;
 using UnityEngine;
 using Zenject;
 
@@ -11,13 +10,6 @@ namespace Assets.Scripts.Game.Units.Components.Weapon
 		private int _damage;
 		private float _speed;
 		private Transform _target;
-
-		public void Init(int damage, float speed, Transform target)
-		{
-			_damage = damage;
-			_speed = speed;
-			_target = target;
-		}
 
 		private void FixedUpdate()
 		{
@@ -36,11 +28,20 @@ namespace Assets.Scripts.Game.Units.Components.Weapon
 
 		private void OnTriggerEnter2D(Collider2D collision)
 		{
-			var enemy = collision.gameObject.GetComponent<EnemyUnit>();
-			if (enemy == null) return;
+			if (!collision.gameObject.TryGetComponent<EnemyUnit>(out var enemy)) 
+				return;
 			enemy.ApplyDamage(_damage);
 			Destroy(gameObject);
 		}
-		public class Factory : PlaceholderFactory<Bullet> { }
+
+		public void Init(int damage, float speed, Transform target)
+		{
+			_damage = damage;
+			_speed = speed;
+			_target = target;
+		}
+
 	}
+	
+	public class BulletFactory : PlaceholderFactory<Bullet> { }
 }

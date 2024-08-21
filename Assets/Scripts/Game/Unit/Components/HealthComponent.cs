@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Assets.Scripts.Game.Units.Components
 {
-	public class HealthComponent
+	public class HealthComponent : IDisposable
 	{
 		public event Action IsDead;
 		public int Current => _current;
@@ -24,6 +24,24 @@ namespace Assets.Scripts.Game.Units.Components
 				IsDead?.Invoke();
 		}
 
-		public (int, int) GetInfo() => (_max, _current);
+		public HealthData GetInfo()
+		{
+			return new HealthData
+			{
+				Max = _max,
+				Current = _current
+			};
+		}
+
+		public void Dispose()
+		{
+			IsDead = null;
+		}
+	}
+
+	public class HealthData
+	{
+		public int Current;
+		public int Max;
 	}
 }

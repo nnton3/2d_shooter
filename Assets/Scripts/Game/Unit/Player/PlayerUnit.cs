@@ -1,6 +1,6 @@
 ﻿using Assets.Scripts.Game.Environment;
-using Assets.Scripts.Game.Services;
 using Assets.Scripts.Game.Units.AI;
+using Assets.Scripts.Game.Units.Components;
 using System;
 using UnityEngine;
 using Zenject;
@@ -9,33 +9,30 @@ namespace Assets.Scripts.Game.Units.Player
 {
 	public class PlayerUnit : Unit
 	{
-		public Action<(int, int)> OnHealthChanged;
 		public const float SIZE = 1f;
+		public Rigidbody2D Rigidbody => _rb;
+		public event Action<HealthData> OnHealthChanged;
 		[SerializeField] private Rigidbody2D _rb;
-		private Action _onFixedUpdate;
-		private InputService _inputService;
 		private Border _border;
 
 		[Inject]
-		public void Construct(InputService inputService, Border border) 
+		public void Construct(Border border) 
 		{
-			_inputService = inputService;
 			_border = border;
-			_border.OnDamaged += BorderDamagedHandler;
+			_border.OnDamaged += ApplyDamage;
 		}
 
-		private void BorderDamagedHandler(EnemyUnit enemy)
+		private void ApplyDamage(EnemyUnit enemy)
 		{
 			_health.Reduce(enemy.DefaultDamage);
 			OnHealthChanged?.Invoke(_health.GetInfo());
 		}
 
-		public override void Init(int maxHealth, float speed)
+		protected override void Dispose()
 		{
-			base.Init(maxHealth, speed);
-			_moveComponent = new PlayerMoveComponent(_rb, _speed, ref _onFixedUpdate, _inputService, _border);
+			base.Dispose();
+			_border.OnDamaged -= ApplyDamage;
+			OnHealthChanged = null;
 		}
-
-		private void FixedUpdate() => _onFixedUpdate?.Invoke();
 	}
 }

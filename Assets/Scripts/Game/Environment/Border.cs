@@ -6,13 +6,18 @@ namespace Assets.Scripts.Game.Environment
 {
 	public class Border : MonoBehaviour 
 	{
-		public Action<EnemyUnit> OnDamaged;
+		public event Action<EnemyUnit> OnDamaged;
 
 		private void OnCollisionEnter2D(Collision2D collision)
 		{
-			var enemy = collision.gameObject.GetComponent<EnemyUnit>();
-			if (enemy == null) return;
+			if (!collision.gameObject.TryGetComponent<EnemyUnit>(out var enemy)) 
+				return;
 			OnDamaged?.Invoke(enemy);
+		}
+
+		private void OnDestroy()
+		{
+			OnDamaged = null;
 		}
 	}
 }

@@ -10,6 +10,6 @@ namespace Assets.Scripts.ScriptableObjects.Player
 		public float Speed;
 		public int Damage;
 		public float BulletSpeed;
-		public Bullet BulletPref;
+		public Bullet BulletPrefab;
 	}
 }

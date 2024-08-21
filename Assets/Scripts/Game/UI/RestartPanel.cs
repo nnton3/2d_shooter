@@ -1,8 +1,6 @@
-﻿using Assets.Scripts.Game.Units.Player;
-using System;
+﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
-using Zenject;
 
 namespace Assets.Scripts.Game.UI
 {
@@ -10,14 +8,14 @@ namespace Assets.Scripts.Game.UI
 	{
 		[SerializeField] private Button _restartBtn;
 		[SerializeField] private CanvasGroup _group;
-		private Action _onRestart;
+		private event Action _onRestart;
 
 		private void Awake()
 		{
-			_restartBtn.onClick.AddListener(RestartHandler);
+			_restartBtn.onClick.AddListener(InvokeRestart);
 		}
 
-		private void RestartHandler()
+		private void InvokeRestart()
 		{
 			_onRestart?.Invoke();
 			_onRestart = null;
@@ -36,6 +34,11 @@ namespace Assets.Scripts.Game.UI
 			_group.interactable = false;
 			_group.blocksRaycasts = false;
 			_group.alpha = 0f;
+		}
+
+		private void OnDestroy()
+		{
+			_onRestart = null;
 		}
 	}
 }

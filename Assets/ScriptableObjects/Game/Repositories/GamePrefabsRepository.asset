@@ -9,14 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 993bb9acef97c274790b64b2d1ba3c93, type: 3}
-  m_Name: TestLevel
+  m_Script: {fileID: 11500000, guid: f662f176830372749a5e3ad7bc03c0ab, type: 3}
+  m_Name: GamePrefabsRepository
   m_EditorClassIdentifier: 
-  SpawnDelayRange:
-    _min: 1
-    _max: 2
-  EnemiesCountRange:
-    _min: 10
-    _max: 15
-  EnemyTypesList:
-  - {fileID: 11400000, guid: bae8485ddc469024da6a36a54b81f270, type: 2}
+  _enemyDetectorPrefab: {fileID: 1424272532480745868, guid: f6cf0bf7ab4d1ee47b2c3bf3d33dac24, type: 3}

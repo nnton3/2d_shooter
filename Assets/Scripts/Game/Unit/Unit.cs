@@ -6,25 +6,35 @@ namespace Assets.Scripts.Game.Units
 {
 	public class Unit : MonoBehaviour
 	{
-		public Action OnDead;
-		public float Speed => _speed;
+		public event Action OnDead;
 		public int CurrentHealth => _health.Current;
 		protected HealthComponent _health;
 		protected MoveComponent _moveComponent;
-		protected float _speed;
 
-		public virtual void Init(int maxHealth, float speed)
+		public virtual void Init(MoveComponent moveComponent, HealthComponent health)
 		{
-			_health = new HealthComponent(maxHealth);
-			_health.IsDead += DeadHandler;
-			_speed = speed;
+			_moveComponent = moveComponent;
+			_health = health;
+			_health.IsDead += RemoveFromBattlefield;
 		}
 
-		protected void DeadHandler()
+		protected void RemoveFromBattlefield()
 		{
-			Debug.Log($"Unit is dead");
 			OnDead?.Invoke();
 			Destroy(gameObject);
+		}
+
+		protected virtual void Dispose()
+		{
+			_moveComponent.Dispose();
+			_health.IsDead -= RemoveFromBattlefield;
+			_health.Dispose();
+		}
+
+		private void OnDestroy()
+		{
+			OnDead = null;
+			Dispose();
 		}
 	}
 }

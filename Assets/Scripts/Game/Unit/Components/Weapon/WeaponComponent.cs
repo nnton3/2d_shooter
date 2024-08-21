@@ -6,20 +6,20 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using Zenject;
-using System;
 using Assets.Scripts.Game.Environment;
 using Assets.Scripts.Game.Units.Player;
 using Assets.Scripts.Game.Units.Components.Weapon;
+using System;
 
 namespace Assets.Scripts.Game.Units.Components
 {
-	public class WeaponComponent
+	public class WeaponComponent : IDisposable
 	{
 		private EnemyDetector _enemyDetector;
 		private CoroutineService _coroutineService;
 		private Border _border;
 		private PlayerUnit _player;
-		private Bullet.Factory _bulletFactory;
+		private BulletFactory _bulletFactory;
 		private Queue<EnemyUnit> _targets;
 		private EnemyUnit _currentTarget;
 		private float _fireDelay;
@@ -28,14 +28,14 @@ namespace Assets.Scripts.Game.Units.Components
 		private Coroutine _fireRoutine;
 
 		[Inject]
-		public void Construct(WeaponSettings weaponSettings, EnemyDetector enemyDetector, CoroutineService coroutineService, Border border, PlayerUnit player, Bullet.Factory bulletFactory)
+		public void Construct(WeaponSettings weaponSettings, EnemyDetector enemyDetector, CoroutineService coroutineService, Border border, PlayerUnit player, BulletFactory bulletFactory)
 		{
 			_coroutineService = coroutineService;
 			_border = border;
 			_enemyDetector = enemyDetector;
 			_player = player;
 			_bulletFactory = bulletFactory;
-			_enemyDetector.OnTargetDetected += TargetDetectedHandler;
+			_enemyDetector.OnTargetDetected += RegistryTarget;
 
 			_fireDelay = 1f / weaponSettings.Speed;
 			_bulletSpeed = weaponSettings.BulletSpeed;
@@ -44,23 +44,30 @@ namespace Assets.Scripts.Game.Units.Components
 			_targets = new();
 		}
 
-		private void TargetDetectedHandler(EnemyUnit enemy)
+		private void RegistryTarget(EnemyUnit enemy)
 		{
-			enemy.OnDead += TargetDeadHander;
+			enemy.OnDead += RemoveTarget(enemy);
 			_targets.Enqueue(enemy);
 			TryStartFire();
 		}
 
-		private void TargetDeadHander()
+		private Action RemoveTarget(EnemyUnit enemy)
 		{
-			
+			return () =>
+			{
+				enemy.OnDead -= RemoveTarget(enemy);
+				TryStartFire();
+			};
 		}
 
 		private void TryStartFire()
 		{
-			if (_fireRoutine != null) return;
-			if (_targets.Count == 0) return;
-			if (!TrySelectTarget()) return;
+			if (_fireRoutine != null) 
+				return;
+			if (_targets.Count == 0) 
+				return;
+			if (!TrySelectTarget()) 
+				return;
 			_fireRoutine = _coroutineService.StartCoroutine(FireRoutine());
 		}
 
@@ -69,7 +76,7 @@ namespace Assets.Scripts.Game.Units.Components
 			while (_targets.Count > 0)
 			{
 				var tmpTarget = _targets.Dequeue();
-				if (!TargetIsValid(tmpTarget)) continue;
+				if (tmpTarget == null || !TargetIsValid(tmpTarget)) continue;
 
 				_currentTarget = tmpTarget;
 				break;
@@ -117,6 +124,11 @@ namespace Assets.Scripts.Game.Units.Components
 			bullet.transform.position = _player.transform.position;
 			bullet.Init(_damage, _bulletSpeed, _currentTarget.transform);
 			return _currentTarget.CurrentHealth <= _damage;
+		}
+
+		public void Dispose()
+		{
+			_enemyDetector.OnTargetDetected -= RegistryTarget;
 		}
 	}
 }

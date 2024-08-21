@@ -19,11 +19,11 @@ namespace Assets.Scripts.Game.Services
 		public void Construct(PlayerUnit player, RestartPanel restartPanel, EnemySpawner enemySpawner, DeadEnemiesObserver deadEnemiesObserver)
 		{
 			_player = player;
-			_player.OnDead += PlayerDeadHandler;
+			_player.OnDead += Lose;
 			_restartPanel = restartPanel;
 			_enemySpawner = enemySpawner;
 			_deadEnemiesObserver = deadEnemiesObserver;
-			_deadEnemiesObserver.OnAllEnemiesKilled += LevelEndHandler;
+			_deadEnemiesObserver.OnAllEnemiesKilled += Win;
 
 			StartAsync();
 		}
@@ -34,13 +34,13 @@ namespace Assets.Scripts.Game.Services
 			_enemySpawner.Start();
 		}
 		
-		private void PlayerDeadHandler()
+		private void Lose()
 		{
 			_enemySpawner.Stop();
 			_restartPanel.Show(RestartScene);
 		}
 
-		private void LevelEndHandler()
+		private void Win()
 		{
 			_enemySpawner.Stop();
 			_restartPanel.Show(RestartScene);
@@ -55,10 +55,10 @@ namespace Assets.Scripts.Game.Services
 		public void Dispose()
 		{
 			if (_deadEnemiesObserver != null)
-				_deadEnemiesObserver.OnAllEnemiesKilled -= LevelEndHandler;
+				_deadEnemiesObserver.OnAllEnemiesKilled -= Win;
 
 			if (_player != null) 
-				_player.OnDead -= PlayerDeadHandler;
+				_player.OnDead -= Lose;
 		}
 	}
 }

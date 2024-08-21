@@ -1,5 +1,4 @@
 ﻿using Assets.Scripts.Game.Environment;
-using System;
 using UnityEngine;
 using Zenject;
 
@@ -7,15 +6,19 @@ namespace Assets.Scripts.Game.Units.AI
 {
 	public class EnemyUnit : Unit
 	{
-		public int DefaultDamage => DEFAULT_DAMAGE;
 		private const int DEFAULT_DAMAGE = 1;
-		[SerializeField] private Rigidbody2D _rb;
-		private Action _onFixedUpdate;
+		public int DefaultDamage => DEFAULT_DAMAGE;
+		public float Speed => _moveComponent.Speed;
+		public Rigidbody2D Rigidbody => _rb;
 
-		public override void Init(int maxHealth, float speed)
+		[SerializeField] private Rigidbody2D _rb;
+		private Border _border;
+
+		[Inject]
+		public void Construct(Border border)
 		{
-			base.Init(maxHealth, speed);
-			_moveComponent = new EnemyMoveComponent(_rb, _speed, ref _onFixedUpdate);
+			_border = border;
+			_border.OnDamaged += CollisionWithBorder;
 		}
 
 		public void ApplyDamage(int value)
@@ -23,18 +26,17 @@ namespace Assets.Scripts.Game.Units.AI
 			_health.Reduce(value);
 		}
 
-		[Inject]
-		public void Construct(Border border)
+		private void CollisionWithBorder(EnemyUnit unit)
 		{
-			border.OnDamaged += CollisionWithBorderHandler;
+			if (unit != this) 
+				return;
+			RemoveFromBattlefield();
 		}
 
-		private void CollisionWithBorderHandler(EnemyUnit unit)
+		protected override void Dispose()
 		{
-			if (unit != this) return;
-			DeadHandler();
+			base.Dispose();
+			_border.OnDamaged -= CollisionWithBorder;
 		}
-
-		private void FixedUpdate() => _onFixedUpdate?.Invoke();
 	}
 }

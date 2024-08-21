@@ -203,9 +203,8 @@ MonoBehaviour:
   _playerSpawnData: {fileID: 11400000, guid: 0bf95718c83f20445a56d33d00f5bb10, type: 2}
   _weapon: {fileID: 11400000, guid: 5a1f081a4d9b7c14e84d9ef4408a227e, type: 2}
   _level: {fileID: 11400000, guid: 2ae3c8605ab3e5e4992c0f489f76a8d6, type: 2}
-  _enemyDetectorPref: {fileID: 1424272532480745868, guid: f6cf0bf7ab4d1ee47b2c3bf3d33dac24, type: 3}
+  _prefabsRepository: {fileID: 11400000, guid: 22b378eb8f301e04589411fbdea6cec2, type: 2}
   _hierarchyService: {fileID: 976968859}
-  _inputService: {fileID: 976968858}
   _coroutineService: {fileID: 976968861}
   _border: {fileID: 1548654770}
   _gamePanel: {fileID: 8174024813444932147}
@@ -317,7 +316,6 @@ GameObject:
   m_Component:
   - component: {fileID: 976968860}
   - component: {fileID: 976968859}
-  - component: {fileID: 976968858}
   - component: {fileID: 976968861}
   m_Layer: 0
   m_Name: Services
@@ -326,18 +324,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &976968858
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 976968856}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0be560a946e80074b800f9b12673693a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &976968859
 MonoBehaviour:
   m_ObjectHideFlags: 0

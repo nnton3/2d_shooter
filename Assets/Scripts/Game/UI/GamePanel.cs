@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Game.Units.Player;
+﻿using Assets.Scripts.Game.Units.Components;
+using Assets.Scripts.Game.Units.Player;
 using Assets.Scripts.ScriptableObjects.Units;
 using TMPro;
 using UnityEngine;
@@ -9,17 +10,29 @@ namespace Assets.Scripts.Game.UI
 	public class GamePanel : MonoBehaviour
 	{
 		[SerializeField] private TMP_Text _healthField;
+		private PlayerUnit _player;
 
 		[Inject]
 		public void Construct(PlayerSpawnData playerData, PlayerUnit player)
 		{
-			player.OnHealthChanged += HealthChangedHandler;
-			HealthChangedHandler((playerData.Health, playerData.Health));
+			_player = player;
+			_player.OnHealthChanged += UpdateHealthText;
+			UpdateHealthText(playerData.Health, playerData.Health);
 		}
 
-		private void HealthChangedHandler((int, int) info)
+		private void UpdateHealthText(HealthData info)
 		{
-			_healthField.text = $"Health {info.Item2}/{info.Item1}";			
+			_healthField.text = $"Health {info.Current}/{info.Max}";			
+		}
+
+		private void UpdateHealthText(int max, int current)
+		{
+			_healthField.text = $"Health {current}/{max}";
+		}
+
+		private void OnDestroy()
+		{
+			_player.OnHealthChanged -= UpdateHealthText;
 		}
 	}
 }

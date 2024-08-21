@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Scripts.Game.Services
 {
@@ -7,7 +6,7 @@ namespace Assets.Scripts.Game.Services
 	{
 		public Transform PlayerSpawnPosition => _playerSpawnPoint;
 		[SerializeField] private Transform _playerSpawnPoint;
-		public List<Transform> EnemySpawnPoints => _enemySpawnPoints;
-		[SerializeField] private List<Transform> _enemySpawnPoints;
+		public Transform[] EnemySpawnPoints => _enemySpawnPoints;
+		[SerializeField] private Transform[] _enemySpawnPoints;
 	}
 }

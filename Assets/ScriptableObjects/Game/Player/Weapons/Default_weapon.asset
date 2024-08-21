@@ -16,4 +16,4 @@ MonoBehaviour:
   Speed: 5
   Damage: 2
   BulletSpeed: 10
-  BulletPref: {fileID: 2114397764752680148, guid: 1eb803389b0121c4baec6ac6f3346cd4, type: 3}
+  BulletPrefab: {fileID: 2114397764752680148, guid: 1eb803389b0121c4baec6ac6f3346cd4, type: 3}

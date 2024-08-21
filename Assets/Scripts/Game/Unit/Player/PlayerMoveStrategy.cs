@@ -1,23 +1,26 @@
 ﻿using Assets.Scripts.Game.Environment;
 using Assets.Scripts.Game.Services;
-using Assets.Scripts.Game.Units.Components;
+using Assets.Scripts.Game.Unit.Components;
 using System;
 using UnityEngine;
-using Zenject;
 
 namespace Assets.Scripts.Game.Units.Player
 {
-	public class PlayerMoveComponent : MoveComponent
+	public class PlayerMoveStrategy : IMoveStrategy, IDisposable
 	{
+		public float Speed => _speed;
+		private Transform _transform;
 		private Transform _border;
 		private Vector2 _movement;
 		private Vector2 _minBounds, _maxBounds;
 		private Camera _camera;
 		private InputService _inputService;
+		private float _speed;
 
-		public PlayerMoveComponent(Rigidbody2D rb, float speed, ref Action OnFixedUpdate, InputService inputService, Border border) : 
-			base (rb, speed, ref OnFixedUpdate)
+		public PlayerMoveStrategy(Transform transform, float speed, InputService inputService, Border border)
 		{
+			_transform = transform;
+			_speed = speed;
 			_camera = Camera.main;
 			_inputService = inputService;
 			_border = border.transform;
@@ -25,9 +28,9 @@ namespace Assets.Scripts.Game.Units.Player
 			SubscribeToInput();
 		}
 
-		protected override Vector2 GetNewPosition()
+		public  Vector2 GetPosition()
 		{
-			Vector2 newPosition = _rb.position + _movement * _speed * Time.fixedDeltaTime;
+			Vector2 newPosition = (Vector2)_transform.position + _movement * _speed * Time.fixedDeltaTime;
 			newPosition.x = Mathf.Clamp(newPosition.x, _minBounds.x, _maxBounds.x);
 			newPosition.y = Mathf.Clamp(newPosition.y, _minBounds.y, _maxBounds.y);
 			return newPosition;
@@ -60,9 +63,8 @@ namespace Assets.Scripts.Game.Units.Player
 		private void MoveVertical(float value) => _movement.y = value;
 		#endregion
 
-		public override void Dispose()
+		public void Dispose()
 		{
-			base.Dispose();
 			UnsubscribeFromInput();
 		}
 	}

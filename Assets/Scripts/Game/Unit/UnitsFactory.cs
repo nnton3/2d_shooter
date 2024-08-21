@@ -11,17 +11,16 @@ namespace Assets.Scripts.Game.Units
 
 	public class UnitsFactory : IUnitFactory
 	{
-		private readonly DiContainer _container;
+		private readonly IInstantiator _instantiator;
 
-		public UnitsFactory(DiContainer container)
+		public UnitsFactory(IInstantiator instantiator)
 		{
-			_container = container;
+			_instantiator = instantiator;
 		}
 
 		public T CreateUnit<T>(UnitSpawnData data, Transform parent) where T : Unit
 		{
-			var instance = _container.InstantiatePrefabForComponent<T>(data.Prefab, parent.position, Quaternion.identity, parent);
-			instance.Init(data.Health, data.Speed);
+			var instance = _instantiator.InstantiatePrefabForComponent<T>(data.Prefab, parent.position, Quaternion.identity, parent);
 			return instance;
 		}
 	}
