@@ -47,6 +47,11 @@ namespace Assets.Scripts.Game.Installers
 			RegistryGameServices();
 		}
 
+		private void RegistryEnvironment()
+		{
+			Container.Bind<Border>().FromInstance(_border).AsSingle();
+		}
+
 		private void RegistrySettings()
 		{
 			Container.Bind<PlayerSpawnData>().FromScriptableObject(_playerSpawnData).AsSingle();
@@ -55,27 +60,8 @@ namespace Assets.Scripts.Game.Installers
 			Container.Bind<GamePrefabsRepository>().FromScriptableObject(_prefabsRepository).AsSingle();
 		}
 
-		private void RegistryGameServices()
-		{
-			Container.BindInterfacesAndSelfTo<EnemySpawner>().AsSingle().NonLazy();
-			Container.Bind<DeadEnemiesObserver>().AsSingle();
-			Container.Bind<GameController>().AsSingle().NonLazy();
-		}
-
-		private void RegistryLevelData()
-		{
-			Container.Bind<LevelSettings>().FromInstance(_level).AsSingle().NonLazy();
-			Container.Bind<IFactory<LevelData>>().To<LevelDataFactory>().AsSingle().NonLazy();
-			Container.Bind<LevelData>().FromMethod(context =>
-			{
-				var factory = context.Container.Resolve<IFactory<LevelData>>();
-				return factory.Create();
-			}).AsSingle();
-		}
-
 		private void RegistryServices()
 		{
-			Container.BindInterfacesAndSelfTo<TickService>().AsSingle().NonLazy();
 			Container.Bind<IFactory<Rigidbody2D, IMoveStrategy, MoveComponent>>()
 				.To<MoveComponentFactory>()
 				.AsSingle();
@@ -94,15 +80,28 @@ namespace Assets.Scripts.Game.Installers
 			Container.BindInterfacesAndSelfTo<WeaponComponent>().AsSingle().NonLazy();
 		}
 
-		private void RegistryEnvironment()
-		{
-			Container.Bind<Border>().FromInstance(_border).AsSingle();
-		}
-
 		private void RegistryUI()
 		{
 			Container.Bind<HelathView>().FromInstance(_gamePanel).AsSingle();
 			Container.Bind<RestartPanel>().FromInstance(_restartPanel).AsSingle();
+		}
+
+		private void RegistryLevelData()
+		{
+			Container.Bind<LevelSettings>().FromInstance(_level).AsSingle().NonLazy();
+			Container.Bind<IFactory<LevelData>>().To<LevelDataFactory>().AsSingle().NonLazy();
+			Container.Bind<LevelData>().FromMethod(context =>
+			{
+				var factory = context.Container.Resolve<IFactory<LevelData>>();
+				return factory.Create();
+			}).AsSingle();
+		}
+
+		private void RegistryGameServices()
+		{
+			Container.BindInterfacesAndSelfTo<EnemySpawner>().AsSingle().NonLazy();
+			Container.Bind<DeadEnemiesObserver>().AsSingle();
+			Container.Bind<GameController>().AsSingle().NonLazy();
 		}
 	}
 }

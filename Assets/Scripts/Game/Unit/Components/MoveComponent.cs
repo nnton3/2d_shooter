@@ -1,27 +1,27 @@
-﻿using Assets.Scripts.Game.Services;
-using Assets.Scripts.Game.Unit.Components;
+﻿using Assets.Scripts.Game.Unit.Components;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
 namespace Assets.Scripts.Game.Units.Components
 {
-	public class MoveComponent : IDisposable
+	public class MoveComponent : IFixedTickable, IDisposable
 	{
 		public float Speed => _strategy.Speed;
 		protected Rigidbody2D _rb;
-		private TickService _tickService;
 		private IMoveStrategy _strategy;
+		private TickableManager _tickableManager;
 
-		public MoveComponent(Rigidbody2D rb, TickService tickService, IMoveStrategy strategy)
+		public MoveComponent(Rigidbody2D rb, IMoveStrategy strategy, TickableManager tickableManager)
 		{
 			_rb = rb;
-			_tickService = tickService;
-			_tickService.OnFixedTick += FixedTick;
 			_strategy = strategy;
+			_tickableManager = tickableManager;
+			_tickableManager.AddFixed(this);
 		}
 
-		private void FixedTick()
+		void IFixedTickable.FixedTick()
 		{
 			Vector2 newPosition = _strategy.GetPosition();
 			_rb.MovePosition(newPosition);
@@ -29,22 +29,23 @@ namespace Assets.Scripts.Game.Units.Components
 
 		public void Dispose()
 		{
-			_tickService.OnFixedTick -= FixedTick;
+			_tickableManager.RemoveFixed(this);
 		}
 	}
 
 	public class MoveComponentFactory : IFactory<Rigidbody2D, IMoveStrategy, MoveComponent>
 	{
-		private TickService _tickService;
+		private readonly IInstantiator _instantiator;
 
-		public MoveComponentFactory(TickService tickService)
+		public MoveComponentFactory(IInstantiator instantiator)
 		{
-			_tickService = tickService;
+			_instantiator = instantiator;
 		}
 
 		public MoveComponent Create(Rigidbody2D rb, IMoveStrategy strategy)
 		{
-			return new MoveComponent(rb, _tickService, strategy);
+			var instance = _instantiator.Instantiate<MoveComponent>(new List<object>() { rb, strategy });
+			return instance;
 		}
 	}
 }

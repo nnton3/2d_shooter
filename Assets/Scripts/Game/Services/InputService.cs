@@ -4,20 +4,12 @@ using Zenject;
 
 namespace Assets.Scripts.Game.Services
 {
-	public class InputService : IDisposable
+	public class InputService : IDisposable, ITickable
 	{
 		public event Action<float> OnMoveHorizontal;
 		public event Action<float> OnMoveVertical;
-		private TickService _tickService;
 
-		[Inject]
-		public void Construct(TickService tickService)
-		{
-			_tickService = tickService;
-			_tickService.OnTick += Tick;
-		}
-
-		public void Tick()
+		void ITickable.Tick()
 		{
 			OnMoveHorizontal?.Invoke(Input.GetAxisRaw("Horizontal"));
 			OnMoveVertical?.Invoke(Input.GetAxisRaw("Vertical"));
@@ -25,7 +17,6 @@ namespace Assets.Scripts.Game.Services
 
 		public void Dispose()
 		{
-			_tickService.OnTick -= Tick;
 			OnMoveHorizontal = null;
 			OnMoveVertical = null;
 		}

@@ -1,6 +1,7 @@
 using Assets.Scripts.Game.Units.Components;
 using System;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.Game.Units
 {
@@ -10,6 +11,13 @@ namespace Assets.Scripts.Game.Units
 		public int CurrentHealth => _health.Current;
 		protected HealthComponent _health;
 		protected MoveComponent _moveComponent;
+		private TickableManager _tickableManager;
+
+		[Inject]
+		public void Construct(TickableManager tickableManager)
+		{
+			_tickableManager = tickableManager;
+		}
 
 		public virtual void Init(MoveComponent moveComponent, HealthComponent health)
 		{
@@ -18,23 +26,14 @@ namespace Assets.Scripts.Game.Units
 			_health.IsDead += RemoveFromBattlefield;
 		}
 
-		protected void RemoveFromBattlefield()
+		protected virtual void RemoveFromBattlefield()
 		{
 			OnDead?.Invoke();
-			Destroy(gameObject);
-		}
-
-		protected virtual void Dispose()
-		{
-			_moveComponent.Dispose();
+			OnDead = null;
 			_health.IsDead -= RemoveFromBattlefield;
 			_health.Dispose();
-		}
-
-		private void OnDestroy()
-		{
-			OnDead = null;
-			Dispose();
+			_moveComponent.Dispose();
+			Destroy(gameObject);
 		}
 	}
 }

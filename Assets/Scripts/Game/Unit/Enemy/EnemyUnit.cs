@@ -33,10 +33,10 @@ namespace Assets.Scripts.Game.Units.AI
 			RemoveFromBattlefield();
 		}
 
-		protected override void Dispose()
+		protected override void RemoveFromBattlefield()
 		{
-			base.Dispose();
 			_border.OnDamaged -= CollisionWithBorder;
+			base.RemoveFromBattlefield();
 		}
 	}
 }

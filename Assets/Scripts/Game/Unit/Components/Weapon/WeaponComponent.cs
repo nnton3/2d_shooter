@@ -128,6 +128,7 @@ namespace Assets.Scripts.Game.Units.Components
 
 		public void Dispose()
 		{
+			_coroutineService.StopCoroutine(_fireRoutine);
 			_enemyDetector.OnTargetDetected -= RegistryTarget;
 		}
 	}

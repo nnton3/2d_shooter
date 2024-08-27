@@ -28,11 +28,11 @@ namespace Assets.Scripts.Game.Units.Player
 			OnHealthChanged?.Invoke(_health.GetInfo());
 		}
 
-		protected override void Dispose()
+		protected override void RemoveFromBattlefield()
 		{
-			base.Dispose();
 			_border.OnDamaged -= ApplyDamage;
 			OnHealthChanged = null;
+			base.RemoveFromBattlefield();
 		}
 	}
 }
