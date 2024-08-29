@@ -22,15 +22,23 @@ namespace Assets.Scripts.Game.Units.AI
 		private Transform[] _spawnPoints;
 		private List<EnemyUnit> _enemyInstances = new();
 		private IFactory<Rigidbody2D, IMoveStrategy, MoveComponent> _moveComponentFactory;
+		private IFactory<int, HealthComponent> _healthComponentFactory;
 
 		[Inject]
-		public void Construct(CoroutineService coroutineService, IUnitFactory unitFactory, HierarchyService hierarchyService, LevelData levelData, IFactory<Rigidbody2D, IMoveStrategy, MoveComponent> moveComponentFactory)
+		public void Construct(
+			CoroutineService coroutineService, 
+			IUnitFactory unitFactory, 
+			HierarchyService hierarchyService, 
+			LevelData levelData, 
+			IFactory<Rigidbody2D, IMoveStrategy, MoveComponent> moveComponentFactory,
+			IFactory<int, HealthComponent> healthComponentFactory)
 		{
-			_moveComponentFactory = moveComponentFactory;
 			_coroutineService = coroutineService;
 			_unitFactory = unitFactory;
 			_spawnPoints = hierarchyService.EnemySpawnPoints;
 			_levelData = levelData;
+			_moveComponentFactory = moveComponentFactory;
+			_healthComponentFactory = healthComponentFactory;
 		}
 
 		public void Start()
@@ -47,7 +55,7 @@ namespace Assets.Scripts.Game.Units.AI
 				_enemyInstances.Add(unitInstance);
 				var moveStrategy = new EnemyMoveStrategy(unitInstance.transform, _levelData.UnitsSpawnData[i].Speed);
 				var moveComponent = _moveComponentFactory.Create(unitInstance.Rigidbody, moveStrategy);
-				var healthComponent = new HealthComponent(_levelData.UnitsSpawnData[i].Health);
+				var healthComponent = _healthComponentFactory.Create(_levelData.UnitsSpawnData[i].Health);
 				unitInstance.Init(moveComponent, healthComponent);
 				unitInstance.OnDead += StopListen(unitInstance);
 				OnEnemySpawned?.Invoke(unitInstance);

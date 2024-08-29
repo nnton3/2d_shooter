@@ -16,10 +16,18 @@ namespace Assets.Scripts.Game.Services
 		private PlayerSpawnData _spawnData;
 		private HierarchyService _hierarchyService;
 		private IFactory<Rigidbody2D, IMoveStrategy, MoveComponent> _moveComponentFactory;
+		private IFactory<int, HealthComponent> _healthComponentFactory;
 		private InputService _inputService;
 		private Border _border;
 
-		public PlayerFactory(IUnitFactory unitFactory, PlayerSpawnData spawnData, HierarchyService hierarchyService, IFactory<Rigidbody2D, IMoveStrategy, MoveComponent> moveComponentFactory, InputService inputService, Border border)
+		public PlayerFactory(
+			IUnitFactory unitFactory, 
+			PlayerSpawnData spawnData, 
+			HierarchyService hierarchyService, 
+			IFactory<Rigidbody2D, IMoveStrategy, MoveComponent> moveComponentFactory,
+			IFactory<int, HealthComponent> healthComponentFactory,
+			InputService inputService, 
+			Border border)
 		{
 			_unitFactory = unitFactory;
 			_spawnData = spawnData;
@@ -27,6 +35,7 @@ namespace Assets.Scripts.Game.Services
 			_moveComponentFactory = moveComponentFactory;
 			_inputService = inputService;
 			_border = border;
+			_healthComponentFactory = healthComponentFactory;
 		}
 
 		public PlayerUnit Create()
@@ -34,7 +43,7 @@ namespace Assets.Scripts.Game.Services
 			var player = _unitFactory.CreateUnit<PlayerUnit>(_spawnData, _hierarchyService.PlayerSpawnPosition);
 			var moveStrategy = new PlayerMoveStrategy(player.transform, _spawnData.Speed, _inputService, _border);
 			var moveComponent = _moveComponentFactory.Create(player.Rigidbody, moveStrategy);
-			var healthComponent = new HealthComponent(_spawnData.Health);
+			var healthComponent = _healthComponentFactory.Create(_spawnData.Health);
 			player.Init(moveComponent, healthComponent);
 			return player;
 		}

@@ -28,7 +28,13 @@ namespace Assets.Scripts.Game.Units.Components
 		private Coroutine _fireRoutine;
 
 		[Inject]
-		public void Construct(WeaponSettings weaponSettings, EnemyDetector enemyDetector, CoroutineService coroutineService, Border border, PlayerUnit player, BulletFactory bulletFactory)
+		public void Construct(
+			WeaponSettings weaponSettings, 
+			EnemyDetector enemyDetector, 
+			CoroutineService coroutineService, 
+			Border border, 
+			PlayerUnit player, 
+			BulletFactory bulletFactory)
 		{
 			_coroutineService = coroutineService;
 			_border = border;

@@ -65,6 +65,9 @@ namespace Assets.Scripts.Game.Installers
 			Container.Bind<IFactory<Rigidbody2D, IMoveStrategy, MoveComponent>>()
 				.To<MoveComponentFactory>()
 				.AsSingle();
+			Container.Bind<IFactory<int, HealthComponent>>()
+				.To<HealthComponentFactory>()
+				.AsSingle();
 			Container.Bind<EnemyUnit>().AsTransient();
 			Container.Bind<IUnitFactory>().To<UnitsFactory>().AsSingle();
 

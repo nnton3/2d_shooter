@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using Zenject;
 
 namespace Assets.Scripts.Game.Units.Components
 {
@@ -36,6 +37,14 @@ namespace Assets.Scripts.Game.Units.Components
 		public void Dispose()
 		{
 			IsDead = null;
+		}
+	}
+
+	public class HealthComponentFactory : IFactory<int, HealthComponent>
+	{
+		public HealthComponent Create(int maxHealth)
+		{
+			return new HealthComponent(maxHealth);
 		}
 	}
 
